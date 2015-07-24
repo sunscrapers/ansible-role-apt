@@ -1,0 +1,23 @@
+
+- name: apt | update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+
+- name: apt | install server requirements
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items: apt_install_packages
+
+- name: apt | install unattended-upgrades
+  apt:
+    pkg: unattended-upgrades
+    state: present
+  when: apt_setup_unattended_upgrades
+
+- name: apt | configure unattended-upgrades
+  template:
+    src: auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+  when: apt_setup_unattended_upgrades
